@@ -1,0 +1,20 @@
+[models.<AZURE_OPENAI_MODEL>]
+routing = ["azure"]
+
+[models.<AZURE_OPENAI_MODEL>.providers.azure]
+type = "azure"
+deployment_id = "<AZURE_OPENAI_MODEL>"
+endpoint = "<AZURE_OPENAI_ENDPOINT>"
+
+[functions.davy_test]
+type = "json"
+system_schema = "./schema/system_schema.json"
+user_schema = "./schema/user_schema.json"
+output_schema = "./schema/output_schema.json"
+
+[functions.davy_test.variants.short_talk]
+type = "chat_completion"
+model = "gpt-4o"
+system_template = "./template/system.minijinja"
+user_template = "./template/user.minijinja"
+json_mode = "on"

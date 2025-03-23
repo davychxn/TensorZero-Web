@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="description" content="Webpage description goes here" />
+  <meta charset="utf-8">
+  <title>TensorZero Web Chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="">
+</head>
+
+<body>
+  
+<div class="container" style="text-align: center;">
+
+<label for="chat_history">TensorZero Web Chat</label>
+<br />
+<br />
+<textarea id="chat_history" name="chat_history" rows="30" cols="200" style="overflow-y: scroll; height: 500px; resize: none;">
+</textarea>
+
+<br />
+<div style="width: 100%; text-align: center;">
+<table style="margin-left: auto; margin-right: auto;">
+<tr>
+<td style="text-align: right;">
+<textarea id="chat_box" name="chat_box" rows="6" cols="100">
+</textarea>
+</td>
+<td>
+&nbsp;
+</td>
+<td style="text-align: left;">
+<label for="no_template">Agent Without Template</label>&nbsp;
+<input type="checkbox" id="no_template" name="no_template">
+<br />
+<br />
+<button onclick="submit_chat();">Enter</button>
+</td>
+</tr>
+</table>
+</div>
+</div>
+
+<script>
+
+const chat_history = document.getElementById("chat_history");
+const chat_box = document.getElementById("chat_box");
+const button_submit = document.getElementById("submit_chat");
+const no_template = document.getElementById("no_template");
+
+const append_chat_history = (role, chat_text, chat_text2=null) =>
+{
+    if (chat_text?.length > 0)
+    {
+        // Append new message to Chat history
+        const chat_history_text = chat_history.value;
+        // Omit the line-change with User message, which AI response doesn't have
+        if (role === "User")
+        {
+            chat_history.value = `${chat_history_text}[${role}]: \n${chat_text}\n`;
+        }
+        else
+        {
+            // role === AI
+            if (!chat_text2)
+            {
+                chat_history.value = `${chat_history_text}[${role}]: \n${chat_text}\n\n`;
+            }
+            else
+            {
+                // Checkbox 'Agent Without Template' checked
+                chat_history.value = `${chat_history_text}[${role}]: \n${chat_text}\n[${role} - without template]: \n${chat_text2}\n\n`;
+            }
+        }
+        
+        // Don't call TensorZero again for appending AI responce to Chat history
+        if (role === "User")
+        {
+            const payload = {
+                function_name: "davy_test",
+                variant_name: "short_talk",
+                input: {
+                    system: {
+                        system_task: "Take User as your friend. Don't use long text to reply, make it short, and easier to understand, don't need to be comprehensive, make User like talking to you."
+                    },
+                    messages: [{
+                        role: "user",
+                        content: { user_message: chat_text}
+                    }]
+                }
+            };
+
+            // Call TensorZero inference
+            fetch("http://localhost:4000/api/inference",
+            {
+                mode: "cors",
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(function(res)
+            { 
+                if (!res.ok)
+                {
+                    throw new Error('Network response was not ok ' + res.statusText);
+                }
+                return res.json(); 
+            })
+            .then(function(data)
+            {
+                // Append AI responce to Chat history
+                no_template?.checked ? append_chat_history("AI", data.output.parsed.humanized_response, data.output.parsed.LLM_response) : append_chat_history("AI", data.output.parsed.humanized_response);
+            })
+            .catch(function(error)
+            { 
+                console.error('Error:', error); 
+                alert('Failed to connect to the server. Please make sure the server is running and CORS is properly configured.');
+            });
+            
+        }
+        
+        // Scroll Chat history to bottom
+        chat_history.scrollTop = chat_history.scrollHeight;
+        // Get ready for User input
+        chat_box.focus();
+    }
+}
+
+// Summit Chat button callback
+const submit_chat = () =>
+{
+    if (chat_box)
+    {
+        const chat_text = chat_box.value;
+        // Append User message to Chat history
+        append_chat_history("User", chat_text);
+        chat_box.value = "";
+    }
+}
+
+chat_box.addEventListener("keyup", function(event)
+{
+    event.preventDefault();
+    if (event.keyCode === 13)
+    {
+        submit_chat();
+    }
+});
+
+</script>
+
+</body>
+</html>

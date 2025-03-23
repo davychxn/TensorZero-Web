@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "LLM_response": {
+        "type": "string",
+        "description": "Normal feedback from agent/LLM to user message, fill in 'humanized_response' field based on it."
+      },
+      "humanized_response": {
+        "type": "string",
+        "description": "Answer to User message, should be with similar length to User input, not longer, like talking to a friend, kind and with caring"
+      }
+    },
+    "required": ["humanized_response"],
+    "additionalProperties": false
+}
