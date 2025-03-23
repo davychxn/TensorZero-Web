@@ -32,6 +32,7 @@ Created a simplified interactive Web UI to experiment/compare with/without Promp
     - Run `npm i express`
     - Run `npm i http-proxy-middleware`
 5. Fill in following values to `TensorZero-Web\config\user_settings.cmd`
+    - `5` places to replace
 ```cmd
 REM @%YOUR_NETWORD_NAME%: you name it
 REM @%YOUR_DB_NAME%: ClickHouse DB name
@@ -46,16 +47,15 @@ SET YOUR_DB_PASSWORD=<FILL_BEFORE_USE>
 SET YOUR_MOUNT_PATH=%cd%/config
 SET AZURE_SERVICE_KEY=<FILL_BEFORE_USE>
 ```
-    - `5` places to replace
 6. Fill in following values to `TensorZero-Web\config\tensorzero.toml`
+    - `4` places to replace
+    - TensorZero supports multiple popular LLMs, I used Azure `gpt-4o` model to test
 ```
 <AZURE_OPENAI_MODEL>
 <AZURE_OPENAI_ENDPOINT>
 ```
-    - `4` places to replace
-    - TensorZero supports multiple popular LLMs, I used Azure `gpt-4o` model to test
 7. Run `start_docker_containers.cmd` in console
-    - There might be blockers setting up ClickHouse DB instance on container, I struggled for hours, if you use ClickHouse cloud account might be easier
+    - There might be blockers setting up ClickHouse DB instance on container on the first run, I struggled for hours, if you use ClickHouse cloud account might be easier
     - Node.js proxy server is also started at the end of the script
 8. Chat in `tensorzero_chat.html`
     - Check/Uncheck `Agent Without Template` to switch off/on Diff for Prompt Template control
