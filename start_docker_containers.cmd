@@ -1,15 +1,15 @@
 REM Pull required containers
-ECHO Uncomment below hidden lines to pull containers
-REM docker pull clickhouse/clickhouse-server
-REM docker pull clickhouse/clickhouse-client
-REM docker pull tensorzero/gateway
+@ECHO Uncomment below hidden lines to pull containers
+docker pull clickhouse/clickhouse-server
+docker pull clickhouse/clickhouse-client
+docker pull tensorzero/gateway
 
 REM Load User Settings
 call ./config/user_settings.cmd
 
 REM Create network for inter-containers requests
-ECHO Uncomment below hidden line to create network
-REM docker network create %YOUR_NETWORD_NAME%
+@ECHO Uncomment below hidden line to create network
+docker network create %YOUR_NETWORD_NAME%
 
 REM Start clickhouse-server
 REM Might need extra effort to make it working, I struggled here a few hours
